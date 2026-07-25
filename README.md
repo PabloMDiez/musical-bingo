@@ -23,6 +23,17 @@ the MC can tick off songs as they're played. It's independent of any
 player's card — just the whole file, in order, with checkmarks saved
 to `localStorage` (and a "Reset" button to clear them for a new game).
 
+## Projector view
+
+`projector.html?playlist=NAME` is a big-screen "Now Playing" display for
+the crowd while they mark their cards. It updates automatically the
+moment the MC checks a song off in `mc.html` — but only when both pages
+are open in **the same browser on the same computer** (e.g. the MC's
+laptop plugged into the projector, checklist in one window/tab and the
+projector view in another). The sync works via `localStorage`, which
+isn't shared across different devices, so this won't update live if the
+MC uses a separate phone/tablet from whatever drives the projector.
+
 ## Adding a playlist
 
 Add a new text file to `playlists/`, one song title per line, e.g.

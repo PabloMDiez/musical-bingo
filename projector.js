@@ -1,0 +1,55 @@
+(function () {
+  "use strict";
+
+  const playlistEl = document.getElementById("projector-playlist");
+  const labelEl = document.getElementById("projector-label");
+  const songEl = document.getElementById("projector-song");
+  const noPlaylistEl = document.getElementById("no-playlist");
+
+  const slug = new URLSearchParams(window.location.search).get("playlist");
+
+  if (!slug) {
+    playlistEl.hidden = true;
+    labelEl.hidden = true;
+    songEl.hidden = true;
+    noPlaylistEl.hidden = false;
+    return;
+  }
+
+  const currentKey = `musical-bingo:current:${slug}`;
+  playlistEl.textContent = displayName(slug);
+
+  showCurrent(parseCurrent(localStorage.getItem(currentKey)));
+
+  // Fires in this window whenever mc.html (open in another tab/window of the
+  // same browser) marks a new song as played and writes to localStorage.
+  window.addEventListener("storage", (event) => {
+    if (event.key === currentKey) {
+      showCurrent(parseCurrent(event.newValue));
+    }
+  });
+
+  function parseCurrent(raw) {
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed.text === "string") return parsed;
+    } catch (err) {
+      /* ignore corrupted value */
+    }
+    return null;
+  }
+
+  function showCurrent(current) {
+    songEl.textContent = current ? current.text : "Waiting for the first song…";
+    songEl.classList.remove("is-fresh");
+    void songEl.offsetWidth; // restart the reveal animation
+    songEl.classList.add("is-fresh");
+  }
+
+  function displayName(slug) {
+    return slug
+      .replace(/[-_]+/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+})();

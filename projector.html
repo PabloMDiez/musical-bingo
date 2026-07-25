@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#12141c" />
+  <title>Musical Bingo — Now Playing</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="projector" class="projector">
+    <p id="projector-playlist" class="projector__playlist"></p>
+    <p id="projector-label" class="projector__label">Now Playing</p>
+    <h1 id="projector-song" class="projector__song">Waiting for the first song&hellip;</h1>
+
+    <div id="no-playlist" class="empty-state" hidden>
+      <h2>No playlist selected</h2>
+      <p>
+        Add <code>?playlist=NAME</code> to the URL, where <code>NAME</code>
+        matches a file in the <code>playlists</code> folder.
+      </p>
+    </div>
+  </div>
+
+  <script src="projector.js"></script>
+</body>
+</html>

@@ -18,6 +18,7 @@
   }
 
   const storageKey = `musical-bingo:mc:${slug}`;
+  const currentKey = `musical-bingo:current:${slug}`;
   titleEl.textContent = `${displayName(slug)} — MC List`;
 
   init();
@@ -92,6 +93,9 @@
         saveState(played);
         li.classList.toggle("is-played", checkbox.checked);
         updateProgress(played);
+        if (checkbox.checked) {
+          setCurrentSong(song);
+        }
       });
 
       const text = document.createElement("span");
@@ -128,6 +132,13 @@
 
   function saveState(played) {
     localStorage.setItem(storageKey, JSON.stringify(played));
+  }
+
+  function setCurrentSong(song) {
+    localStorage.setItem(
+      currentKey,
+      JSON.stringify({ text: song, ts: Date.now() })
+    );
   }
 
   function showLoadError(detail) {
