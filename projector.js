@@ -20,7 +20,11 @@
   const playedKey = `musical-bingo:mc:${slug}`;
   playlistEl.textContent = displayName(slug);
 
+  const TEASER_EMOJIS = ["🎵", "🎶", "🎧", "🎤", "🎸", "🥁", "🎷", "🎹"];
+  const TEASER_BEAT_MS = 700;
+
   let countdownTimer = null;
+  let teaserTimer = null;
   let lastText = null;
 
   render(parseCurrent(localStorage.getItem(currentKey)));
@@ -64,6 +68,8 @@
 
   function render(current) {
     clearTimeout(countdownTimer);
+    clearInterval(teaserTimer);
+    songEl.classList.remove("projector__song--teaser");
 
     if (!current) {
       showIdle();
@@ -86,7 +92,17 @@
   }
 
   function showTeaser() {
-    setDisplay({ label: "Get Ready", text: "🎵 Someone hit play…" });
+    labelEl.hidden = false;
+    labelEl.textContent = "Get Ready";
+    songEl.classList.add("projector__song--teaser");
+
+    let index = 0;
+    const nextEmoji = () => {
+      songEl.textContent = TEASER_EMOJIS[index % TEASER_EMOJIS.length];
+      index++;
+    };
+    nextEmoji();
+    teaserTimer = setInterval(nextEmoji, TEASER_BEAT_MS);
   }
 
   function runCountdown(current) {
