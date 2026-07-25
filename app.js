@@ -41,32 +41,39 @@
   orientationQuery.addEventListener("change", updatePortraitNotice);
 
   async function startGame() {
-    await enterFullscreenLandscape();
+    // Best-effort only: some browsers (e.g. Firefox for Android) never
+    // settle these promises, so they must never block the game from starting.
+    enterFullscreenLandscape();
     splashEl.hidden = true;
     appEl.hidden = false;
     updatePortraitNotice();
     await init();
   }
 
-  async function enterFullscreenLandscape() {
+  function enterFullscreenLandscape() {
     const el = document.documentElement;
-    try {
-      if (el.requestFullscreen) {
-        await el.requestFullscreen();
-      } else if (el.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen();
-      }
-    } catch (err) {
-      /* fullscreen unavailable or blocked; carry on windowed */
-    }
+    const request =
+      el.requestFullscreen ||
+      el.webkitRequestFullscreen ||
+      el.mozRequestFullScreen ||
+      el.msRequestFullscreen;
 
-    try {
-      if (screen.orientation && screen.orientation.lock) {
-        await screen.orientation.lock("landscape");
-      }
-    } catch (err) {
-      /* orientation lock unsupported (e.g. iOS Safari); rely on the rotate prompt */
-    }
+    Promise.resolve()
+      .then(() => (request ? request.call(el) : null))
+      .then(() => withTimeout(screen.orientation && screen.orientation.lock
+        ? screen.orientation.lock("landscape")
+        : null, 1000))
+      .catch(() => {
+        /* fullscreen/orientation-lock unavailable or blocked; rely on the rotate prompt */
+      });
+  }
+
+  function withTimeout(promise, ms) {
+    if (!promise) return Promise.resolve();
+    return Promise.race([
+      promise,
+      new Promise((resolve) => setTimeout(resolve, ms)),
+    ]);
   }
 
   function updatePortraitNotice() {
