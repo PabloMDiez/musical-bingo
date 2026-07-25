@@ -8,12 +8,19 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="portrait-notice" class="portrait-notice">
+  <div id="splash" class="splash">
+    <div class="splash__title">🎵 Musical Bingo</div>
+    <p id="splash-subtitle" class="splash__subtitle"></p>
+    <button id="start-btn" class="btn btn--start" type="button">Start</button>
+    <p class="splash__hint">Goes fullscreen landscape when you tap Start.</p>
+  </div>
+
+  <div id="portrait-notice" class="portrait-notice" hidden>
     <div class="portrait-notice__icon" aria-hidden="true">&#8635;</div>
     <p>Rotate your phone to landscape to play.</p>
   </div>
 
-  <div id="app" class="app">
+  <div id="app" class="app" hidden>
     <header class="app__bar">
       <h1 id="playlist-name" class="app__title">Musical Bingo</h1>
       <button id="new-card-btn" class="btn" type="button">New card</button>

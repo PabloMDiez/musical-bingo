@@ -5,7 +5,12 @@
   const BLANK_COUNT = 3;
   const SONG_COUNT = CARD_SIZE - BLANK_COUNT;
 
+  const splashEl = document.getElementById("splash");
+  const splashSubtitleEl = document.getElementById("splash-subtitle");
+  const startBtn = document.getElementById("start-btn");
+  const portraitNoticeEl = document.getElementById("portrait-notice");
   const boardEl = document.getElementById("board");
+  const appEl = document.getElementById("app");
   const titleEl = document.getElementById("playlist-name");
   const newCardBtn = document.getElementById("new-card-btn");
   const noPlaylistEl = document.getElementById("no-playlist");
@@ -19,6 +24,8 @@
     window.location.pathname + "?playlist=sample";
 
   if (!slug) {
+    splashEl.hidden = true;
+    appEl.hidden = false;
     noPlaylistEl.hidden = false;
     newCardBtn.hidden = true;
     return;
@@ -26,8 +33,45 @@
 
   const storageKey = `musical-bingo:${slug}`;
   titleEl.textContent = displayName(slug);
+  splashSubtitleEl.textContent = displayName(slug);
 
-  init();
+  startBtn.addEventListener("click", startGame, { once: true });
+
+  const orientationQuery = window.matchMedia("(orientation: portrait)");
+  orientationQuery.addEventListener("change", updatePortraitNotice);
+
+  async function startGame() {
+    await enterFullscreenLandscape();
+    splashEl.hidden = true;
+    appEl.hidden = false;
+    updatePortraitNotice();
+    await init();
+  }
+
+  async function enterFullscreenLandscape() {
+    const el = document.documentElement;
+    try {
+      if (el.requestFullscreen) {
+        await el.requestFullscreen();
+      } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+      }
+    } catch (err) {
+      /* fullscreen unavailable or blocked; carry on windowed */
+    }
+
+    try {
+      if (screen.orientation && screen.orientation.lock) {
+        await screen.orientation.lock("landscape");
+      }
+    } catch (err) {
+      /* orientation lock unsupported (e.g. iOS Safari); rely on the rotate prompt */
+    }
+  }
+
+  function updatePortraitNotice() {
+    portraitNoticeEl.hidden = !orientationQuery.matches;
+  }
 
   async function init() {
     const saved = loadState();
