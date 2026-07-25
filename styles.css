@@ -214,3 +214,70 @@ body {
   font-size: 0.8rem;
   max-width: 20rem;
 }
+
+.mc {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 1rem;
+  min-height: 100%;
+}
+
+.mc__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.mc__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.mc__progress {
+  color: var(--text-dim);
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+}
+
+.mc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mc-list__item {
+  background: var(--cell-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.mc-list__item label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+}
+
+.mc-list__item input[type="checkbox"] {
+  width: 1.3rem;
+  height: 1.3rem;
+  flex: 0 0 auto;
+  accent-color: var(--accent);
+}
+
+.mc-list__item.is-played {
+  border-color: var(--cell-marked-bg);
+}
+
+.mc-list__item.is-played span {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  color: var(--text-dim);
+}

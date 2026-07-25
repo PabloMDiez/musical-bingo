@@ -16,6 +16,13 @@ HTML/CSS/JS, deployable straight to GitHub Pages.
 - Portrait orientation shows a "rotate your phone" prompt instead of the
   board.
 
+## MC list
+
+`mc.html?playlist=NAME` shows the full playlist as a plain checklist so
+the MC can tick off songs as they're played. It's independent of any
+player's card — just the whole file, in order, with checkmarks saved
+to `localStorage` (and a "Reset" button to clear them for a new game).
+
 ## Adding a playlist
 
 Add a new text file to `playlists/`, one song title per line, e.g.

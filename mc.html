@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#12141c" />
+  <title>Musical Bingo — MC List</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="mc-app" class="mc">
+    <header class="mc__bar">
+      <h1 id="mc-playlist-name" class="mc__title">MC List</h1>
+      <button id="reset-btn" class="btn" type="button">Reset</button>
+    </header>
+
+    <p id="mc-progress" class="mc__progress"></p>
+
+    <ul id="mc-list" class="mc-list"></ul>
+
+    <div id="no-playlist" class="empty-state" hidden>
+      <h2>No playlist selected</h2>
+      <p>
+        Add <code>?playlist=NAME</code> to the URL, where <code>NAME</code>
+        matches a file in the <code>playlists</code> folder.
+      </p>
+    </div>
+
+    <div id="load-error" class="empty-state" hidden>
+      <h2>Couldn't load that playlist</h2>
+      <p id="load-error-detail"></p>
+    </div>
+  </div>
+
+  <script src="mc.js"></script>
+</body>
+</html>
