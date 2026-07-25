@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#12141c" />
+  <title>Musical Bingo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="portrait-notice" class="portrait-notice">
+    <div class="portrait-notice__icon" aria-hidden="true">&#8635;</div>
+    <p>Rotate your phone to landscape to play.</p>
+  </div>
+
+  <div id="app" class="app">
+    <header class="app__bar">
+      <h1 id="playlist-name" class="app__title">Musical Bingo</h1>
+      <button id="new-card-btn" class="btn" type="button">New card</button>
+    </header>
+
+    <main id="board" class="board" aria-label="Bingo card"></main>
+
+    <div id="no-playlist" class="empty-state" hidden>
+      <h2>No playlist selected</h2>
+      <p>
+        Add <code>?playlist=NAME</code> to the URL, where <code>NAME</code>
+        matches a file in the <code>playlists</code> folder (without the
+        <code>.txt</code> extension).
+      </p>
+      <p>Example: <code id="example-link"></code></p>
+    </div>
+
+    <div id="load-error" class="empty-state" hidden>
+      <h2>Couldn't load that playlist</h2>
+      <p id="load-error-detail"></p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
