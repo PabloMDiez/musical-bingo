@@ -17,15 +17,21 @@
   }
 
   const currentKey = `musical-bingo:current:${slug}`;
+  const playedKey = `musical-bingo:mc:${slug}`;
   playlistEl.textContent = displayName(slug);
 
   showCurrent(parseCurrent(localStorage.getItem(currentKey)));
 
   // Fires in this window whenever mc.html (open in another tab/window of the
-  // same browser) marks a new song as played and writes to localStorage.
+  // same browser) marks a song as playing, clears it, or checks one off.
   window.addEventListener("storage", (event) => {
     if (event.key === currentKey) {
       showCurrent(parseCurrent(event.newValue));
+    } else if (event.key === playedKey) {
+      const current = parseCurrent(localStorage.getItem(currentKey));
+      if (!current) {
+        showCurrent(null);
+      }
     }
   });
 
@@ -40,8 +46,29 @@
     return null;
   }
 
+  function playedCount() {
+    const raw = localStorage.getItem(playedKey);
+    if (!raw) return 0;
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed.filter(Boolean).length;
+    } catch (err) {
+      /* ignore corrupted value */
+    }
+    return 0;
+  }
+
   function showCurrent(current) {
-    songEl.textContent = current ? current.text : "Waiting for the first song…";
+    labelEl.hidden = !current;
+    if (current) {
+      songEl.textContent = current.text;
+    } else {
+      const count = playedCount();
+      songEl.textContent =
+        count > 0
+          ? `${count} song${count === 1 ? "" : "s"} played so far`
+          : "Waiting for the first song…";
+    }
     songEl.classList.remove("is-fresh");
     void songEl.offsetWidth; // restart the reveal animation
     songEl.classList.add("is-fresh");

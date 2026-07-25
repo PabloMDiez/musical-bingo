@@ -230,6 +230,17 @@ body {
   margin-bottom: 0.25rem;
 }
 
+.mc__bar-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn--ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
 .mc__title {
   font-size: 1.1rem;
   font-weight: 600;
@@ -254,8 +265,6 @@ body {
 .mc-list__item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding-left: 0.6rem;
   background: var(--cell-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -276,26 +285,6 @@ body {
   height: 1.3rem;
   flex: 0 0 auto;
   accent-color: var(--accent);
-}
-
-.mc-list__play-btn {
-  flex: 0 0 auto;
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--bar-bg);
-  color: var(--text);
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mc-list__play-btn.is-active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
 }
 
 .mc-list__item.is-current {

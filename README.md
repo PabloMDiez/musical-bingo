@@ -27,11 +27,12 @@ to `localStorage` (and a "Reset" button to clear them for a new game).
 
 `projector.html?playlist=NAME` is a big-screen "Now Playing" display for
 the crowd while they mark their cards. Each row in `mc.html` has its own
-▶ button, separate from the played checkbox — tapping it marks that song
-as now playing (only one at a time; tapping the active row's button
-again, or hitting Reset, stops it and the projector goes back to
-"Waiting for the first song…"). The played checkbox is purely for the
-MC's own tally and has no effect on the projector.
+song's checkbox — checking it off marks that song as now playing on the
+projector. The "Clear" button stops showing a song without touching any
+checkmarks (e.g. between songs); "Reset" clears every checkmark and
+stops the projector too. While no song is currently playing, the
+projector shows a running count ("12 songs played so far") instead of
+a static message.
 
 This only updates live when both pages are open in **the same browser
 on the same computer** (e.g. the MC's laptop plugged into the

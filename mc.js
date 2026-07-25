@@ -4,6 +4,7 @@
   const listEl = document.getElementById("mc-list");
   const titleEl = document.getElementById("mc-playlist-name");
   const progressEl = document.getElementById("mc-progress");
+  const clearBtn = document.getElementById("clear-btn");
   const resetBtn = document.getElementById("reset-btn");
   const noPlaylistEl = document.getElementById("no-playlist");
   const loadErrorEl = document.getElementById("load-error");
@@ -13,6 +14,7 @@
 
   if (!slug) {
     noPlaylistEl.hidden = false;
+    clearBtn.hidden = true;
     resetBtn.hidden = true;
     return;
   }
@@ -39,7 +41,12 @@
 
     const played = loadState(songs.length);
     let activeIndex = loadActiveIndex(songs);
-    renderList(songs, played, activeIndex);
+    const rows = renderList(songs, played, activeIndex);
+
+    clearBtn.addEventListener("click", () => {
+      clearCurrentSong();
+      setActiveRow(-1);
+    });
 
     resetBtn.addEventListener("click", () => {
       const confirmed = window.confirm(
@@ -50,40 +57,33 @@
         saveState(played);
         clearCurrentSong();
         activeIndex = -1;
-        renderList(songs, played, activeIndex);
+        rows.forEach((row, index) => {
+          row.li.classList.remove("is-played", "is-current");
+          row.checkbox.checked = false;
+        });
+        updateProgress(played);
       }
     });
 
+    function setActiveRow(index) {
+      if (activeIndex >= 0 && rows[activeIndex]) {
+        rows[activeIndex].li.classList.remove("is-current");
+      }
+      activeIndex = index;
+      if (activeIndex >= 0 && rows[activeIndex]) {
+        rows[activeIndex].li.classList.add("is-current");
+      }
+    }
+
     function renderList(songs, played, activeIndex) {
       listEl.innerHTML = "";
+      const rows = [];
 
       songs.forEach((song, index) => {
         const li = document.createElement("li");
         li.className = "mc-list__item";
         if (played[index]) li.classList.add("is-played");
         if (index === activeIndex) li.classList.add("is-current");
-
-        const playBtn = document.createElement("button");
-        playBtn.type = "button";
-        playBtn.className = "mc-list__play-btn";
-        playBtn.setAttribute("aria-pressed", String(index === activeIndex));
-        playBtn.setAttribute(
-          "aria-label",
-          `Show "${song}" on the projector`
-        );
-        playBtn.textContent = index === activeIndex ? "■" : "▶";
-        if (index === activeIndex) playBtn.classList.add("is-active");
-
-        playBtn.addEventListener("click", () => {
-          if (activeIndex === index) {
-            clearCurrentSong();
-            activeIndex = -1;
-          } else {
-            setCurrentSong(song, index);
-            activeIndex = index;
-          }
-          renderList(songs, played, activeIndex);
-        });
 
         const label = document.createElement("label");
 
@@ -95,6 +95,10 @@
           saveState(played);
           li.classList.toggle("is-played", checkbox.checked);
           updateProgress(played);
+          if (checkbox.checked) {
+            setCurrentSong(song, index);
+            setActiveRow(index);
+          }
         });
 
         const text = document.createElement("span");
@@ -102,12 +106,13 @@
 
         label.appendChild(checkbox);
         label.appendChild(text);
-        li.appendChild(playBtn);
         li.appendChild(label);
         listEl.appendChild(li);
+        rows.push({ li, checkbox });
       });
 
       updateProgress(played);
+      return rows;
     }
   }
 
