@@ -26,13 +26,18 @@ to `localStorage` (and a "Reset" button to clear them for a new game).
 ## Projector view
 
 `projector.html?playlist=NAME` is a big-screen "Now Playing" display for
-the crowd while they mark their cards. It updates automatically the
-moment the MC checks a song off in `mc.html` — but only when both pages
-are open in **the same browser on the same computer** (e.g. the MC's
-laptop plugged into the projector, checklist in one window/tab and the
-projector view in another). The sync works via `localStorage`, which
-isn't shared across different devices, so this won't update live if the
-MC uses a separate phone/tablet from whatever drives the projector.
+the crowd while they mark their cards. Each row in `mc.html` has its own
+▶ button, separate from the played checkbox — tapping it marks that song
+as now playing (only one at a time; tapping the active row's button
+again, or hitting Reset, stops it and the projector goes back to
+"Waiting for the first song…"). The played checkbox is purely for the
+MC's own tally and has no effect on the projector.
+
+This only updates live when both pages are open in **the same browser
+on the same computer** (e.g. the MC's laptop plugged into the
+projector, checklist in one window/tab and the projector view in
+another) — the sync works via `localStorage`, which isn't shared across
+different devices.
 
 ## Adding a playlist
 

@@ -38,18 +38,77 @@
     }
 
     const played = loadState(songs.length);
-    renderList(songs, played);
+    let activeIndex = loadActiveIndex(songs);
+    renderList(songs, played, activeIndex);
 
     resetBtn.addEventListener("click", () => {
       const confirmed = window.confirm(
-        "Reset the played list? This clears every checkmark."
+        "Reset the played list? This clears every checkmark and stops the projector."
       );
       if (confirmed) {
         played.fill(false);
         saveState(played);
-        renderList(songs, played);
+        clearCurrentSong();
+        activeIndex = -1;
+        renderList(songs, played, activeIndex);
       }
     });
+
+    function renderList(songs, played, activeIndex) {
+      listEl.innerHTML = "";
+
+      songs.forEach((song, index) => {
+        const li = document.createElement("li");
+        li.className = "mc-list__item";
+        if (played[index]) li.classList.add("is-played");
+        if (index === activeIndex) li.classList.add("is-current");
+
+        const playBtn = document.createElement("button");
+        playBtn.type = "button";
+        playBtn.className = "mc-list__play-btn";
+        playBtn.setAttribute("aria-pressed", String(index === activeIndex));
+        playBtn.setAttribute(
+          "aria-label",
+          `Show "${song}" on the projector`
+        );
+        playBtn.textContent = index === activeIndex ? "■" : "▶";
+        if (index === activeIndex) playBtn.classList.add("is-active");
+
+        playBtn.addEventListener("click", () => {
+          if (activeIndex === index) {
+            clearCurrentSong();
+            activeIndex = -1;
+          } else {
+            setCurrentSong(song, index);
+            activeIndex = index;
+          }
+          renderList(songs, played, activeIndex);
+        });
+
+        const label = document.createElement("label");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = !!played[index];
+        checkbox.addEventListener("change", () => {
+          played[index] = checkbox.checked;
+          saveState(played);
+          li.classList.toggle("is-played", checkbox.checked);
+          updateProgress(played);
+        });
+
+        const text = document.createElement("span");
+        text.textContent = song;
+
+        label.appendChild(checkbox);
+        label.appendChild(text);
+        li.appendChild(playBtn);
+        li.appendChild(label);
+        listEl.appendChild(li);
+      });
+
+      updateProgress(played);
+    }
   }
 
   async function fetchPlaylist(slug) {
@@ -73,41 +132,6 @@
       .split("\n")
       .map((line) => line.trim())
       .filter((line) => line.length > 0);
-  }
-
-  function renderList(songs, played) {
-    listEl.innerHTML = "";
-
-    songs.forEach((song, index) => {
-      const li = document.createElement("li");
-      li.className = "mc-list__item";
-      if (played[index]) li.classList.add("is-played");
-
-      const label = document.createElement("label");
-
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.checked = !!played[index];
-      checkbox.addEventListener("change", () => {
-        played[index] = checkbox.checked;
-        saveState(played);
-        li.classList.toggle("is-played", checkbox.checked);
-        updateProgress(played);
-        if (checkbox.checked) {
-          setCurrentSong(song);
-        }
-      });
-
-      const text = document.createElement("span");
-      text.textContent = song;
-
-      label.appendChild(checkbox);
-      label.appendChild(text);
-      li.appendChild(label);
-      listEl.appendChild(li);
-    });
-
-    updateProgress(played);
   }
 
   function updateProgress(played) {
@@ -134,11 +158,34 @@
     localStorage.setItem(storageKey, JSON.stringify(played));
   }
 
-  function setCurrentSong(song) {
+  function setCurrentSong(song, index) {
     localStorage.setItem(
       currentKey,
-      JSON.stringify({ text: song, ts: Date.now() })
+      JSON.stringify({ text: song, index, ts: Date.now() })
     );
+  }
+
+  function clearCurrentSong() {
+    localStorage.removeItem(currentKey);
+  }
+
+  function loadActiveIndex(songs) {
+    const raw = localStorage.getItem(currentKey);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (
+          parsed &&
+          Number.isInteger(parsed.index) &&
+          songs[parsed.index] === parsed.text
+        ) {
+          return parsed.index;
+        }
+      } catch (err) {
+        /* corrupted state, ignore and fall through */
+      }
+    }
+    return -1;
   }
 
   function showLoadError(detail) {
