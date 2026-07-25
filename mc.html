@@ -35,6 +35,23 @@
     </div>
   </div>
 
+  <div id="reveal-modal" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reveal-modal-title">
+      <h2 id="reveal-modal-title">
+        Reveal <span id="reveal-modal-song" class="modal__song"></span>?
+      </h2>
+      <p class="modal__hint">
+        "Reveal" starts a 5-second countdown on the projector before
+        showing the title.
+      </p>
+      <div class="modal__actions">
+        <button id="reveal-btn" class="btn" type="button">Reveal</button>
+        <button id="reveal-now-btn" class="btn" type="button">Reveal Now</button>
+        <button id="cancel-reveal-btn" class="btn btn--ghost" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script src="mc.js"></script>
 </body>
 </html>

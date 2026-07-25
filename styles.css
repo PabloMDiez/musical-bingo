@@ -358,3 +358,51 @@ body {
     transform: scale(1);
   }
 }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(8, 9, 14, 0.72);
+}
+
+.modal {
+  width: 100%;
+  max-width: 24rem;
+  background: var(--bar-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.modal h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.modal__song {
+  color: var(--accent);
+}
+
+.modal__hint {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin: 0.75rem 0 0;
+}
+
+.modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.modal__actions .btn {
+  width: 100%;
+  padding: 0.75rem;
+}

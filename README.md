@@ -26,9 +26,16 @@ to `localStorage` (and a "Reset" button to clear them for a new game).
 ## Projector view
 
 `projector.html?playlist=NAME` is a big-screen "Now Playing" display for
-the crowd while they mark their cards. Each row in `mc.html` has its own
-song's checkbox — checking it off marks that song as now playing on the
-projector. The "Clear" button stops showing a song without touching any
+the crowd while they mark their cards. Checking a song off in `mc.html`
+doesn't reveal it right away — the projector first shows a generic
+"Get Ready" teaser, and the MC gets a modal with three choices:
+
+- **Reveal** — starts a 5-second countdown on the projector, then shows
+  the title.
+- **Reveal Now** — shows the title immediately.
+- **Cancel** — un-checks the song and stops the projector, no reveal.
+
+The "Clear" button stops showing a song without touching any
 checkmarks (e.g. between songs); "Reset" clears every checkmark and
 stops the projector too. While no song is currently playing, the
 projector shows a running count ("12 songs played so far") instead of

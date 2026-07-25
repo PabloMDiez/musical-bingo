@@ -1,6 +1,8 @@
 (function () {
   "use strict";
 
+  const REVEAL_COUNTDOWN_MS = 5000;
+
   const listEl = document.getElementById("mc-list");
   const titleEl = document.getElementById("mc-playlist-name");
   const progressEl = document.getElementById("mc-progress");
@@ -9,6 +11,11 @@
   const noPlaylistEl = document.getElementById("no-playlist");
   const loadErrorEl = document.getElementById("load-error");
   const loadErrorDetailEl = document.getElementById("load-error-detail");
+  const revealModalEl = document.getElementById("reveal-modal");
+  const revealModalSongEl = document.getElementById("reveal-modal-song");
+  const revealBtn = document.getElementById("reveal-btn");
+  const revealNowBtn = document.getElementById("reveal-now-btn");
+  const cancelRevealBtn = document.getElementById("cancel-reveal-btn");
 
   const slug = new URLSearchParams(window.location.search).get("playlist");
 
@@ -41,6 +48,7 @@
 
     const played = loadState(songs.length);
     let activeIndex = loadActiveIndex(songs);
+    let pending = null;
     const rows = renderList(songs, played, activeIndex);
 
     clearBtn.addEventListener("click", () => {
@@ -53,17 +61,54 @@
         "Reset the played list? This clears every checkmark and stops the projector."
       );
       if (confirmed) {
+        closeRevealModal();
         played.fill(false);
         saveState(played);
         clearCurrentSong();
         activeIndex = -1;
-        rows.forEach((row, index) => {
+        rows.forEach((row) => {
           row.li.classList.remove("is-played", "is-current");
           row.checkbox.checked = false;
         });
         updateProgress(played);
       }
     });
+
+    revealBtn.addEventListener("click", () => {
+      if (!pending) return;
+      scheduleReveal(Date.now() + REVEAL_COUNTDOWN_MS);
+      closeRevealModal();
+    });
+
+    revealNowBtn.addEventListener("click", () => {
+      if (!pending) return;
+      scheduleReveal(Date.now());
+      closeRevealModal();
+    });
+
+    cancelRevealBtn.addEventListener("click", () => {
+      if (!pending) return;
+      const { index, checkbox, li } = pending;
+      played[index] = false;
+      checkbox.checked = false;
+      saveState(played);
+      li.classList.remove("is-played");
+      updateProgress(played);
+      clearCurrentSong();
+      setActiveRow(-1);
+      closeRevealModal();
+    });
+
+    function openRevealModal(song, index, checkbox, li) {
+      pending = { song, index, checkbox, li };
+      revealModalSongEl.textContent = song;
+      revealModalEl.hidden = false;
+    }
+
+    function closeRevealModal() {
+      pending = null;
+      revealModalEl.hidden = true;
+    }
 
     function setActiveRow(index) {
       if (activeIndex >= 0 && rows[activeIndex]) {
@@ -96,8 +141,9 @@
           li.classList.toggle("is-played", checkbox.checked);
           updateProgress(played);
           if (checkbox.checked) {
-            setCurrentSong(song, index);
             setActiveRow(index);
+            startTeaser(song, index);
+            openRevealModal(song, index, checkbox, li);
           }
         });
 
@@ -163,11 +209,34 @@
     localStorage.setItem(storageKey, JSON.stringify(played));
   }
 
-  function setCurrentSong(song, index) {
+  // Marks a song as chosen without revealing its title on the projector yet;
+  // the MC then picks how (and when) it gets revealed via the modal.
+  function startTeaser(song, index) {
     localStorage.setItem(
       currentKey,
-      JSON.stringify({ text: song, index, ts: Date.now() })
+      JSON.stringify({
+        text: song,
+        index,
+        ts: Date.now(),
+        phase: "teaser",
+        revealAt: null,
+      })
     );
+  }
+
+  // revealAt in the past means "reveal immediately"; in the future starts a
+  // countdown. The projector alone decides which, based on the clock.
+  function scheduleReveal(revealAt) {
+    const raw = localStorage.getItem(currentKey);
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw);
+      parsed.phase = "revealing";
+      parsed.revealAt = revealAt;
+      localStorage.setItem(currentKey, JSON.stringify(parsed));
+    } catch (err) {
+      /* corrupted state, nothing to update */
+    }
   }
 
   function clearCurrentSong() {
